@@ -1,0 +1,24 @@
+---
+version: '3.7'
+
+services:
+  heimdall:
+    image: "linuxserver/heimdall:2.2.2-ls82"
+    environment:
+      - "UID=$USER_ID"
+      - "GID=$GROUP_ID"
+      - "TZ=$TZ"
+    networks:
+      - "traefik"
+    volumes:
+      - "./config:/config"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.heimdall.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.heimdall.entrypoints=websecure"
+      - "traefik.http.routers.heimdall.tls.certresolver=myresolver"
+      - "traefik.http.services.heimdall.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true

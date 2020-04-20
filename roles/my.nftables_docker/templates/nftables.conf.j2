@@ -1,0 +1,75 @@
+#!/usr/sbin/nft -f
+# {{ ansible_managed }}
+
+# Clean
+flush ruleset
+
+table inet my_table {
+    chain my_input {
+        type filter hook input priority 0; policy drop;
+
+        ct state invalid counter drop comment "Early drop invalid connections"
+        ct state {established, related} counter accept comment "Accept traffic originated from us"
+
+        iif lo accept comment "Accept any localhost traffic"
+        iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop connections to loopback not coming from loopback"
+
+        ip protocol icmp accept comment "accept all ICMP types"
+        meta l4proto ipv6-icmp accept
+
+        tcp dport 22 ct state new limit rate 15/minute counter accept comment "Accept SSH on port 22"
+
+        counter comment "count dropped packets"
+    }
+
+    chain my_forward {
+        type filter hook forward priority security; policy drop;
+        # This rule allow packet marked by Docker rules (my_docker_user or
+        # my_prerouting) to go through this forward rule.
+        meta mark 1 accept
+        counter comment "count dropped packets"
+    }
+
+    chain my_output {
+        type filter hook output priority 0; policy accept;
+        # Accept every outbound connection
+        counter comment "count accepted packets"
+    }
+}
+
+table ip filter {
+    chain my_docker_user {
+        # Allow on open port from any address
+        meta mark 1 return
+
+        ct state { new } ip saddr != { {{ nftables_docker_ip_authorized|join(', ') }} } drop
+        return
+    }
+
+    chain DOCKER-USER {
+        # For a strange reason, Docker with `iptables-nft` cannot instanciate a
+        # DOCKER-USER chain when the rule `ct state {… }` is put in there.
+        # A workaround is to instanciate an another chain (`my_docker_user`)
+        # with the rights rules.
+        iifname "{{ nftables_docker_public_interface }}" jump my_docker_user
+
+        # Package mark are going through the `my_forward`
+        meta mark set 1
+    }
+}
+
+table ip my_nat {
+    chain my_prerouting {
+        # The priority here "-150" is less than the Docker NAT PREROUTING
+        # rule, in order to be sure to perform packet mark first.
+        type nat hook prerouting priority -150; policy accept;
+
+        # Uncomment in order to be able to use the `# nft monitor trace`
+        # command to see packet going through the nftables.
+        # meta nftrace set 1
+
+        # This is the only "clean" way I've found to be able to restrict
+        # destination port before having them NATed.
+        tcp dport { {{ nftables_docker_publicly_exposed_ports|join(', ') }} } meta mark set 1
+    }
+}

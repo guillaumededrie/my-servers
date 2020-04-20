@@ -1,0 +1,35 @@
+---
+
+- name: nftables_docker | Install package
+  become: yes
+  pacman:
+    name:
+      - "iptables-nft"
+      - "docker"
+    state: present
+
+- name: nftables_docker | Copy configuration file
+  become: yes
+  template:
+    src: "nftables.conf.j2"
+    dest: "/etc/nftables.conf"
+    owner: "{{ nftables_config_owner }}"
+    group: "{{ nftables_config_group }}"
+    mode: 0600
+    validate: "/usr/sbin/nft -c -f %s"
+    backup: yes
+  notify:
+    - nftables_docker | Restart nftables service
+    - nftables_docker | Restart Docker service
+
+- name: nftables_docker | Enable nftables service
+  become: yes
+  service:
+    name: nftables
+    enabled: yes
+
+- name: nftables_docker | Enable Docker service
+  become: yes
+  service:
+    name: docker
+    enabled: yes

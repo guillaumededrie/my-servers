@@ -1,0 +1,31 @@
+---
+version: '3.6'
+
+services:
+  pihole:
+    image: "pihole/pihole:v4.4"
+    cap_add:
+      - "NET_ADMIN"
+    dns:
+      - "127.0.0.1"
+      - "1.1.1.1"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    networks:
+      - "traefik"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.$DOMAIN_NAME`)"
+      - "traefik.http.routers.pihole.entrypoints=websecure"
+      - "traefik.http.routers.pihole.tls.certresolver=myresolver"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+    environment:
+    volumes:
+      - './config:/etc/pihole'
+      - './dnsmasq.d:/etc/dnsmasq.d'
+    restart: always
+
+networks:
+  traefik:
+    external: true

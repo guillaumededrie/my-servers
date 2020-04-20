@@ -1,0 +1,12 @@
+---
+
+nftables_docker_public_interface: "eth0"
+nftables_docker_ip_authorized:
+  - 192.168.12.1
+nftables_docker_publicly_exposed_ports:
+  - 80
+
+docker_compose_apps:
+  - name: Whoami
+    src: "apps/whoami/"
+    dest: "/opt/whoami/"

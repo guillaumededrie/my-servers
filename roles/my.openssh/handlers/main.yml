@@ -1,0 +1,7 @@
+---
+
+- name: OpenSSH server | Restart
+  become: yes
+  service:
+    name: sshd
+    state: restarted

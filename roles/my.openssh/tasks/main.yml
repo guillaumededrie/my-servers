@@ -1,0 +1,24 @@
+---
+
+- name: OpenSSH server | Install configuration
+  become: yes
+  template:
+    src: "sshd_config_{{ openssh_config_version }}.j2"
+    dest: "/etc/ssh/sshd_config"
+    owner: "{{ openssh_owner }}"
+    group: "{{ openssh_group }}"
+    mode: 0600
+    validate: "/usr/bin/sshd -T -C user=root -C host=localhost -C addr=localhost -f %s"
+  notify: OpenSSH server | Restart
+
+- name: OpenSSH server | Check weak moduli
+  shell: "gawk '$5 < {{ openssh_moduli_minimum }}' /etc/ssh/moduli"
+  register: openssh_register_moduli
+  changed_when: false
+  check_mode: no
+
+- name: OpenSSH server | Replace weak moduli
+  become: yes
+  shell: "gawk -i inplace -v INPLACE_SUFFIX=.bak '$5 >= {{ openssh_moduli_minimum }}' /etc/ssh/moduli"
+  notify: OpenSSH server | Restart
+  when: openssh_register_moduli.stdout

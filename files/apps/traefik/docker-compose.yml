@@ -1,0 +1,32 @@
+---
+version: '3.7'
+
+services:
+  traefik:
+    image: "traefik:v2.2.0"
+    container_name: "traefik"
+    networks:
+      - "traefik"
+    ports:
+      - "80:80" # for the HTTP -> HTTPS redirection
+      - "443:443"
+    command:
+      - "--log.level=INFO"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=admin@${DOMAIN_NAME}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "./config:/etc/traefik"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+networks:
+  traefik:
+    name: "traefik"
+    driver: bridge

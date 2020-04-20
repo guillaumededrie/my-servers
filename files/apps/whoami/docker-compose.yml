@@ -1,0 +1,9 @@
+---
+version: "3.7"
+
+services:
+  whoami:
+    image: "containous/whoami"
+    ports:
+      - "80:80"
+      - "8080:80"

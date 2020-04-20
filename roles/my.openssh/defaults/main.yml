@@ -1,0 +1,6 @@
+---
+
+openssh_config_version: "modern"
+openssh_owner: "root"
+openssh_group: "root"
+openssh_moduli_minimum: 3071

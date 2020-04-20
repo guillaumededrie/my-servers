@@ -1,0 +1,43 @@
+---
+
+- name: docker_compose | Install docker-compose
+  become: yes
+  package:
+    name: "docker-compose"
+    state: present
+
+- name: docker_compose | Copy apps
+  become: yes
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0600
+  loop: "{{ docker_compose_apps }}"
+
+- name: docker_compose | Create environment file
+  become: yes
+  copy:
+    dest: "{{ item.dest }}/.env"
+    content: "{{ item.env }}"
+    mode: 0600
+  loop: "{{ docker_compose_apps }}"
+  when: item.env is defined
+
+
+- name: docker_compose | Pull and (re)start apps
+  become: yes
+  docker_compose:
+    project_name: "{{ item.name }}"
+    project_src: "{{ item.dest }}"
+    pull: yes
+    state: present
+  loop: "{{ docker_compose_apps }}"
+
+- name: docker_compose | Prune
+  become: yes
+  docker_prune:
+    containers: yes
+    images: yes
+    networks: yes
+    volumes: yes
+    builder_cache: yes
