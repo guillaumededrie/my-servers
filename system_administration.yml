@@ -27,11 +27,5 @@
     - name: Force all notified handlers to run at this point, not waiting for normal sync points
       meta: flush_handlers
 
-    #- include_role:
-        #name: openstack.ansible-hardening
-
-    #- include_role:
-        #name: dev-sec.ansible-os-hardening
-
     - include_role:
         name: my.docker_compose
