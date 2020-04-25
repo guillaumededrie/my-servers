@@ -11,7 +11,7 @@
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    mode: 0600
+    mode: 0644
   loop: "{{ docker_compose_apps }}"
 
 - name: docker_compose | Create environment file
@@ -19,10 +19,10 @@
   copy:
     dest: "{{ item.dest }}/.env"
     content: "{{ item.env }}"
+    # This may contains some sensible informations.
     mode: 0600
   loop: "{{ docker_compose_apps }}"
   when: item.env is defined
-
 
 - name: docker_compose | Pull and (re)start apps
   become: yes
