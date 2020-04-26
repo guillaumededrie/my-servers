@@ -3370,7 +3370,7 @@
     }
   ],
   "time": {
-    "from": "now-15m",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
