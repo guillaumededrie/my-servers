@@ -32,12 +32,6 @@ services:
       - "traefik"
     labels:
       - "org.label-schema.group=monitoring"
-      - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.$DOMAIN_NAME`)"
-      - "traefik.http.routers.prometheus.entrypoints=websecure"
-      - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-      - "traefik.docker.network=traefik"
 
   alertmanager:
     image: "prom/alertmanager:v0.20.0"
@@ -52,11 +46,22 @@ services:
       - "traefik"
     labels:
       - "org.label-schema.group=monitoring"
+
+  karma:
+    image: "lmierzwa/karma:v0.60"
+    container_name: "karma"
+    networks:
+      - "monitoring"
+      - "traefik"
+    environment:
+      - "ALERTMANAGER_URI=http://alertmanager:9093"
+    labels:
+      - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.$DOMAIN_NAME`)"
-      - "traefik.http.routers.alertmanager.entrypoints=websecure"
-      - "traefik.http.routers.alertmanager.tls.certresolver=myresolver"
-      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+      - "traefik.http.routers.karma.rule=Host(`karma.$DOMAIN_NAME`)"
+      - "traefik.http.routers.karma.entrypoints=websecure"
+      - "traefik.http.routers.karma.tls.certresolver=myresolver"
+      - "traefik.http.services.karma.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik"
 
   nodeexporter:
