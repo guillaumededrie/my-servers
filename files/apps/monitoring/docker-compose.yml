@@ -7,7 +7,11 @@ networks:
   traefik:
     external: true
   monitoring:
-    driver: bridge
+    name: "monitoring"
+    ipam:
+      driver: "default"
+      config:
+        - subnet: "172.42.0.0/24"
 
 volumes:
     prometheus_data: {}
@@ -28,8 +32,9 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     networks:
-      - "monitoring"
-      - "traefik"
+      monitoring:
+        ipv4_address: "172.42.0.10"
+      traefik:
     labels:
       - "org.label-schema.group=monitoring"
 
@@ -63,23 +68,6 @@ services:
       - "traefik.http.routers.karma.tls.certresolver=myresolver"
       - "traefik.http.services.karma.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik"
-
-  nodeexporter:
-    image: "prom/node-exporter:v0.18.1"
-    container_name: "nodeexporter"
-    volumes:
-      - "/proc:/host/proc:ro"
-      - "/sys:/host/sys:ro"
-      - "/:/rootfs:ro"
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
-    networks:
-      - "monitoring"
-    labels:
-      - "org.label-schema.group=monitoring"
 
   cadvisor:
     image: "gcr.io/google-containers/cadvisor:v0.36.0"

@@ -1,4 +1,4 @@
-#!/usr/sbin/nft -f
+#!/usr/bin/env nft -f
 # {{ ansible_managed }}
 
 # Clean
@@ -13,6 +13,9 @@ table inet my_table {
 
         iif lo accept comment "Accept any localhost traffic"
         iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop connections to loopback not coming from loopback"
+
+        # Allow Prometheus container from the monitoring to access nodeexporter metrics
+        ct state { new } ip saddr 172.42.0.10 tcp dport 9100 accept
 
         ip protocol icmp accept comment "accept all ICMP types"
         meta l4proto ipv6-icmp accept
@@ -42,7 +45,7 @@ table ip filter {
         # Allow on open port from any address
         meta mark 1 return
 
-        ct state { new } ip saddr != { {{ nftables_docker_ip_authorized|join(', ') }} } drop
+        ct state { new } ip saddr != { {{ apps_authorized_ips|join(', ') }} } drop
         return
     }
 
@@ -51,7 +54,7 @@ table ip filter {
         # DOCKER-USER chain when the rule `ct state {… }` is put in there.
         # A workaround is to instanciate an another chain (`my_docker_user`)
         # with the rights rules.
-        iifname "{{ nftables_docker_public_interface }}" jump my_docker_user
+        iifname "{{ apps_public_interface_authorized }}" jump my_docker_user
 
         # Package mark are going through the `my_forward`
         meta mark set 1
@@ -70,6 +73,6 @@ table ip my_nat {
 
         # This is the only "clean" way I've found to be able to restrict
         # destination port before having them NATed.
-        tcp dport { {{ nftables_docker_publicly_exposed_ports|join(', ') }} } meta mark set 1
+        tcp dport { 80, {{ apps_publicly_exposed_ports|join(', ') }} } meta mark set 1
     }
 }

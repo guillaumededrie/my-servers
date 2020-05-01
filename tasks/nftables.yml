@@ -1,0 +1,36 @@
+---
+
+- name: nftables_docker | Install iptables-nft
+  become: yes
+  register: firewall_installed
+  ignore_errors: yes
+  pacman:
+    name: iptables-nft
+    state: present
+
+- fail:
+    msg: "You need to manually install iptables-nft that will require to ask for iptables deletion before relaunching."
+  when: firewall_installed is failed
+
+- name: nftables_docker | Copy configuration file
+  become: yes
+  template:
+    src: "nftables.conf.j2"
+    dest: "/etc/nftables.conf"
+    owner: "root"
+    group: "root"
+    mode: 0600
+    validate: "/usr/sbin/nft -c -f %s"
+    backup: yes
+  notify:
+    - Restart nftables service
+    - Restart firewall
+
+- name: nftables_docker | Enable nftables service
+  become: yes
+  service:
+    name: nftables
+    enabled: yes
+
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  meta: flush_handlers

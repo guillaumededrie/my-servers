@@ -1,0 +1,54 @@
+---
+
+- name: App | Create root directory
+  become: yes
+  file:
+    path: "/opt/{{ app_name }}"
+    state: directory
+
+- name: App | Create directories
+  become: yes
+  file:
+    path: "/opt/{{ app_name }}/{{ item.path }}"
+    state: directory
+  with_filetree: "{{ app_src }}"
+  when: item.state == 'directory'
+
+- name: App | Copy files
+  become: yes
+  copy:
+    src: "{{ item.src }}"
+    dest: "/opt/{{ app_name }}/{{ item.path }}"
+    mode: "0644"
+  with_filetree: "{{ app_src }}"
+  when:
+    - item.state == 'file'
+    - (item.path | splitext)[1] != '.j2'
+
+- name: App | Compute templates
+  become: yes
+  template:
+    src: "{{ item.src }}"
+    dest: "/opt/{{ app_name }}/{{ (item.path | splitext)[0] }}"
+    mode: "0644"
+  with_filetree: "{{ app_src }}"
+  when:
+    - item.state == 'file'
+    - (item.path | splitext)[1] == '.j2'
+
+- name: App | Create environment file
+  become: yes
+  copy:
+    dest: "/opt/{{ app_name }}/.env"
+    content: "{{ app_env }}"
+    # This may contains some sensible informations.
+    mode: 0600
+  when: app_env is defined and app_env != ''
+
+- name: App | Pull and (re)start apps
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+  docker_compose:
+    project_src: "/opt/{{ app_name }}"
+    pull: yes
+    state: present

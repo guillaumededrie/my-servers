@@ -1,0 +1,16 @@
+---
+
+- name: Packages | Perform upgrade
+  become: yes
+  register: upgraded
+  package:
+    update_cache: yes
+    upgrade: yes
+
+- block:
+    - debug:
+        var: upgraded.packages
+
+    - pause:
+        prompt: "Press enter to continue… You may want to restart your server before (review the packages updated)."
+  when: upgraded.changed

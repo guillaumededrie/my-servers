@@ -1,12 +1,18 @@
 ---
 
-nftables_docker_public_interface: "eth0"
-nftables_docker_ip_authorized:
-  - 192.168.12.1
-nftables_docker_publicly_exposed_ports:
-  - 80
+domain_name: "test.local"
+domain_name_acme_email: "admin@{{ domain_name }}"
+acme_staging: True
 
-docker_compose_apps:
-  - name: Whoami
-    src: "apps/whoami/"
-    dest: "/opt/whoami/"
+apps_public_interface_authorized: "eth0"
+apps_authorized_ips:
+  - 192.168.12.1
+apps_publicly_exposed_ports: []
+
+monitoring_admin_password: changeme
+monitoring_pushover_user_key: "userkey"
+monitoring_pushover_token: "token"
+
+apps:
+  - name: whoami
+    src: files/apps/whoami/

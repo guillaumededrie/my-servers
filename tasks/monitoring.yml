@@ -1,0 +1,27 @@
+---
+# Here we assume that docker and nftables (+ iptables) are installed and
+# configured.
+
+# The documentation relative to node-exporter say that it's better not to use
+# Docker image
+- name: monitoring | Install package
+  become: yes
+  pacman:
+    name: "prometheus-node-exporter"
+    state: present
+
+- include_tasks: app_management.yml
+  vars:
+    app_name: monitoring
+    app_src: files/apps/monitoring/
+    app_env: |
+      DOMAIN_NAME={{ domain_name }}
+      ADMIN_USER=admin
+      ADMIN_PASSWORD={{ monitoring_admin_password }}
+
+- name: monitoring | Start and enable NodeExporter service
+  become: yes
+  service:
+    name: "prometheus-node-exporter"
+    state: started
+    enabled: yes

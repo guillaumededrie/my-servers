@@ -1,31 +1,59 @@
 #!/usr/bin/env ansible-playbook
 
 - hosts: all
-  tasks:
-    - name: Packages | Perform upgrade
+  handlers:
+    - name: Restart OpenSSH Server service
       become: yes
-      register: upgraded
-      package:
-        update_cache: yes
-        upgrade: yes
+      service:
+        name: sshd
+        state: restarted
+      listen: Restart firewall
 
-    - block:
-        - debug:
-            var: upgraded.packages
+    - name: Restart nftables service
+      become: yes
+      service:
+        name: nftables
+        state: restarted
 
-        - pause:
-            prompt: "Press enter to continue… You may want to restart your server before (review the packages updated)."
-      when: upgraded.changed
+    - name: Restart docker service
+      become: yes
+      service:
+        name: docker
+        state: restarted
+      listen: Restart firewall
 
-    - include_role:
-        name: my.openssh
-    - name: Force all notified handlers to run at this point, not waiting for normal sync points
-      meta: flush_handlers
+  tasks:
+    - include_tasks: tasks/packages.yml
 
-    - include_role:
-        name: my.nftables_docker
-    - name: Force all notified handlers to run at this point, not waiting for normal sync points
-      meta: flush_handlers
+    - include_tasks: tasks/opensshd.yml
 
-    - include_role:
-        name: my.docker_compose
+    - include_tasks: tasks/nftables.yml
+
+    - include_tasks: tasks/docker.yml
+
+    - include_tasks: tasks/app_management.yml
+      vars:
+        app_name: traefik
+        app_src: files/apps/traefik/
+        app_env: |
+          ACME_EMAIL={{ domain_name_acme_email }}
+
+    - include_tasks: tasks/monitoring.yml
+
+    - include_tasks: tasks/app_management.yml
+      vars:
+        app_name: "{{ outer_item.name }}"
+        app_src: "{{ outer_item.src }}"
+        app_env: "{{ outer_item.env | default('') }}"
+      loop: "{{ apps }}"
+      loop_control:
+        loop_var: outer_item
+
+    - name: Cleanup docker images/network/…
+      become: yes
+      docker_prune:
+        containers: yes
+        images: yes
+        networks: yes
+        volumes: yes
+        builder_cache: yes

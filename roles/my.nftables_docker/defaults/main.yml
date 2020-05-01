@@ -1,6 +1,0 @@
----
-
-nftables_config_owner: "root"
-nftables_config_group: "root"
-nftables_docker_publicly_exposed_ports: []
-nftables_docker_ip_authorized: []
