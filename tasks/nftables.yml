@@ -5,7 +5,7 @@
   register: firewall_installed
   ignore_errors: yes
   pacman:
-    name: iptables-nft
+    name: "iptables-nft"
     state: present
 
 - fail:
@@ -29,7 +29,7 @@
 - name: nftables_docker | Enable nftables service
   become: yes
   service:
-    name: nftables
+    name: "nftables"
     enabled: yes
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points

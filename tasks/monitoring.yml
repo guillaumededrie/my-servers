@@ -12,7 +12,7 @@
 
 - include_tasks: app_management.yml
   vars:
-    app_name: monitoring
+    app_name: "monitoring"
     app_src: files/apps/monitoring/
     app_env: |
       DOMAIN_NAME={{ domain_name }}

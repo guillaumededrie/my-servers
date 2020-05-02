@@ -5,20 +5,20 @@
     - name: Restart OpenSSH Server service
       become: yes
       service:
-        name: sshd
+        name: "sshd"
         state: restarted
       listen: Restart firewall
 
     - name: Restart nftables service
       become: yes
       service:
-        name: nftables
+        name: "nftables"
         state: restarted
 
     - name: Restart docker service
       become: yes
       service:
-        name: docker
+        name: "docker"
         state: restarted
       listen: Restart firewall
 
@@ -33,7 +33,7 @@
 
     - include_tasks: tasks/app_management.yml
       vars:
-        app_name: traefik
+        app_name: "traefik"
         app_src: files/apps/traefik/
         app_env: |
           ACME_EMAIL={{ domain_name_acme_email }}
@@ -47,7 +47,7 @@
         app_env: "{{ outer_item.env | default('') }}"
       loop: "{{ apps }}"
       loop_control:
-        loop_var: outer_item
+        loop_var: "outer_item"
 
     - name: Cleanup docker images/network/…
       become: yes

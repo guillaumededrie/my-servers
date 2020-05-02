@@ -11,5 +11,5 @@
 - name: nftables_docker | Enable Docker service
   become: yes
   service:
-    name: docker
+    name: "docker"
     enabled: yes
