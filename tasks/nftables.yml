@@ -1,6 +1,8 @@
 ---
 
-- name: nftables_docker | Install iptables-nft
+  # `iptables-nft` is the best way to provide a compatible interface for Docker and nftables.
+  # See: https://wiki.archlinux.org/index.php/Nftables#Working_with_Docker
+- name: nftables | Install iptables-nft
   become: yes
   register: firewall_installed
   ignore_errors: yes
@@ -9,10 +11,10 @@
     state: present
 
 - fail:
-    msg: "You need to manually install iptables-nft that will require to ask for iptables deletion before relaunching."
+    msg: "You need to manually install iptables-nft that will require manual intervention for iptables deletion, then start again."
   when: firewall_installed is failed
 
-- name: nftables_docker | Copy configuration file
+- name: nftables | Copy configuration file
   become: yes
   template:
     src: "nftables.conf.j2"
@@ -26,11 +28,11 @@
     - Restart nftables service
     - Restart firewall
 
-- name: nftables_docker | Enable nftables service
+- name: nftables | Enable nftables service
   become: yes
   service:
     name: "nftables"
     enabled: yes
 
-- name: Force all notified handlers to run at this point, not waiting for normal sync points
+- name: nftables | Force all notified handlers to run at this point, not waiting for normal sync points
   meta: flush_handlers

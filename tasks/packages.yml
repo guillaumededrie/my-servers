@@ -12,5 +12,5 @@
         var: upgraded.packages
 
     - pause:
-        prompt: "Press enter to continue… You may want to restart your server before (review the packages updated)."
+        prompt: "Review updated packages! Then restart your server if needed and/or press enter to continue…"
   when: upgraded.changed

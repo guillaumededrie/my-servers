@@ -1,6 +1,6 @@
 ---
 
-- name: nftables_docker | Install docker
+- name: docker | Install Docker tools
   become: yes
   pacman:
     name:
@@ -8,7 +8,7 @@
       - "docker-compose"
     state: present
 
-- name: nftables_docker | Enable Docker service
+- name: docker | Enable Docker service
   become: yes
   service:
     name: "docker"
