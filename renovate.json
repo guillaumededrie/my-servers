@@ -1,4 +1,7 @@
 {
+  "assignees": [
+    "guillaumededrie"
+  ],
   "extends": [
     "config:base"
   ]
