@@ -8,6 +8,7 @@ services:
     environment:
       - "UID=$USER_ID"
       - "GID=$GROUP_ID"
+      - "GIDLIST=$EMBY_GIDLIST"
     networks:
       - "traefik"
     volumes:
@@ -15,7 +16,8 @@ services:
       - "/home/lotus/docker/media/media/radarr/movies:/mnt/movies"
       - "/home/lotus/docker/media/media/sonarr/series:/mnt/tvshows"
       - "/home/lotus/docker/media/media/documentaries:/mnt/documentairies"
-      - "/tmp/transcode:/transcode"
+    devices:
+      - "/dev/dri:/dev/dri"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.emby.rule=Host(`emby.${DOMAIN_NAME}`)"
