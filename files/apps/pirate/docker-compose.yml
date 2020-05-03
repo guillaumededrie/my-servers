@@ -12,6 +12,7 @@ services:
     networks:
       - "traefik"
     volumes:
+      - "/etc/localtime:/etc/localtime:ro"
       - "./emby:/config"
       - "/home/lotus/docker/media/media/radarr/movies:/mnt/movies"
       - "/home/lotus/docker/media/media/sonarr/series:/mnt/tvshows"
