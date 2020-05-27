@@ -1,0 +1,35 @@
+---
+
+- name: backup | Install Packages
+  become: yes
+  pacman:
+    name:
+      - "borgmatic"
+    state: present
+
+- name: backup | Ensure root has SSH Key
+  become: yes
+  user:
+    name: "root"
+    generate_ssh_key: yes
+    ssh_key_file: ".ssh/id_ed25519"
+    ssh_key_type: "ed25519"
+
+- name: backup | Ensure /etc/borgmatic exists
+  become: yes
+  file:
+    path: "/etc/borgmatic"
+    owner: "root"
+    group: "root"
+    mode: 0600
+    state: directory
+
+- name: backup | Add Borgmatic Configuration
+  become: yes
+  template:
+    src: "borgmatic.yaml.j2"
+    dest: "/etc/borgmatic/config.yaml"
+    owner: "root"
+    group: "root"
+    mode: 0600
+    validate: "validate-borgmatic-config -c %s"
