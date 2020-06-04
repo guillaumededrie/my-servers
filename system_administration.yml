@@ -26,6 +26,8 @@
     - include_tasks: tasks/packages.yml
 
     - include_tasks: tasks/opensshd.yml
+      vars:
+        openssh_moduli_minimum: 3071
 
     - include_tasks: tasks/nftables.yml
 

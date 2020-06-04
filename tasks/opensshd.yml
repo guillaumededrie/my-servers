@@ -12,7 +12,7 @@
   notify: Restart OpenSSH Server service
 
 - name: OpenSSH Server | Check weak moduli
-  shell: "gawk '$5 < 3071' /etc/ssh/moduli"
+  shell: "gawk '$5 < {{ openssh_moduli_minimum }}' /etc/ssh/moduli"
   register: openssh_register_moduli
   changed_when: false
   check_mode: no
