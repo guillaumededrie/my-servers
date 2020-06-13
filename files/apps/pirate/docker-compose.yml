@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   emby:
-    image: "emby/embyserver:4.5.0.12"
+    image: "emby/embyserver:4.5.0.13"
     container_name: "emby"
     environment:
       - "UID=$USER_ID"
