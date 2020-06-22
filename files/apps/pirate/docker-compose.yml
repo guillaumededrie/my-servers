@@ -91,7 +91,7 @@ services:
       - "jackett"
 
   radarr:
-    image: "linuxserver/radarr:3.0.0.3064-ls11"
+    image: "linuxserver/radarr:3.0.0.3073-ls11"
     container_name: "radarr"
     environment:
       - "PUID=$USER_ID"
