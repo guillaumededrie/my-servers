@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   heimdall:
-    image: "linuxserver/heimdall:2.2.2-ls100"
+    image: "linuxserver/heimdall:2.2.2-ls101"
     container_name: "heimdall"
     environment:
       - "UID=$USER_ID"
