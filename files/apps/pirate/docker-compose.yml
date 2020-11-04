@@ -50,7 +50,7 @@ services:
       - "traefik.http.services.transmission.loadbalancer.server.port=9091"
 
   jackett:
-    image: "linuxserver/jackett:v0.16.1922-ls20"
+    image: "linuxserver/jackett:v0.16.2040-ls22"
     container_name: "jackett"
     environment:
       - "PUID=$USER_ID"
@@ -68,7 +68,7 @@ services:
       - "traefik.http.services.jackett.loadbalancer.server.port=9117"
 
   sonarr:
-    image: "linuxserver/sonarr:version-3.0.4.991"
+    image: "linuxserver/sonarr:version-3.0.4.993"
     container_name: "sonarr"
     environment:
       - "PUID=$USER_ID"
@@ -91,7 +91,7 @@ services:
       - "jackett"
 
   radarr:
-    image: "linuxserver/radarr:version-3.0.0.3974"
+    image: "linuxserver/radarr:version-3.0.0.3987"
     container_name: "radarr"
     environment:
       - "PUID=$USER_ID"
