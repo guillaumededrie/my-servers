@@ -3,6 +3,7 @@
     "guillaumededrie"
   ],
   "extends": [
-    "config:base"
+    "config:base",
+    "docker:enableMajor"
   ]
 }
