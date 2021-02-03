@@ -68,7 +68,7 @@ services:
       - "traefik.http.services.jackett.loadbalancer.server.port=9117"
 
   sonarr:
-    image: "linuxserver/sonarr:preview-version-3.0.4.1058"
+    image: "linuxserver/sonarr:preview-version-3.0.4.1091"
     container_name: "sonarr"
     environment:
       - "PUID=$USER_ID"
