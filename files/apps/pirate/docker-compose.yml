@@ -50,7 +50,7 @@ services:
       - "traefik.http.services.transmission.loadbalancer.server.port=9091"
 
   jackett:
-    image: "linuxserver/jackett:version-v0.17.954"
+    image: "linuxserver/jackett:version-v0.17.1008"
     container_name: "jackett"
     environment:
       - "PUID=$USER_ID"
@@ -91,7 +91,7 @@ services:
       - "jackett"
 
   radarr:
-    image: "linuxserver/radarr:version-3.0.2.4552"
+    image: "linuxserver/radarr:version-3.1.1.4954"
     container_name: "radarr"
     environment:
       - "PUID=$USER_ID"
