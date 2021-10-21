@@ -27,7 +27,7 @@ services:
       - "traefik.http.services.emby.loadbalancer.server.port=8096"
 
   transmission:
-    image: "linuxserver/transmission:2021.10.07"
+    image: "linuxserver/transmission:2021.10.21"
     container_name: "transmission"
     environment:
       - "PUID=$USER_ID"
