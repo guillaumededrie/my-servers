@@ -3,11 +3,11 @@ version: '3.7'
 
 services:
   heimdall:
-    image: "linuxserver/heimdall:2021.10.31"
+    image: "linuxserver/heimdall:2.2.2"
     container_name: "heimdall"
     environment:
-      - "UID=$USER_ID"
-      - "GID=$GROUP_ID"
+      - "PUID=$USER_ID"
+      - "PGID=$GROUP_ID"
       - "TZ=$TZ"
     networks:
       - "traefik"
