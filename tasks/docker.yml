@@ -1,11 +1,10 @@
 ---
 
-- name: docker | Install Docker tools
+- name: docker | Install Docker via package manager
   become: yes
   pacman:
     name:
       - "docker"
-      - "docker-compose"
     state: present
 
 - name: docker | Enable Docker service

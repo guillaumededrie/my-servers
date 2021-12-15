@@ -45,10 +45,18 @@
     mode: 0600
   when: app_env is defined and app_env != ''
 
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html#requirements
+- name: docker | Install Ansible Docker Compose module requirements
+  become: yes
+  pip:
+    name:
+      - docker
+      - docker-compose
+      - PyYAML
+
 - name: App | Pull and (re)start apps
   become: yes
   ignore_errors: "{{ ansible_check_mode }}"
   docker_compose:
     project_src: "/opt/{{ app_name }}"
-    pull: yes
     state: present
