@@ -31,3 +31,65 @@ Host my-hostname.tld
     AddKeysToAgent yes
     ForwardAgent no
 ```
+
+
+## Provisioning
+
+Create an
+[`inventory.ini`](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html)
+file:
+```ini
+my-host.tld
+
+[online]
+my-host.tld
+
+[backup]
+my-host.tld
+```
+
+and the `hosts_vars/my-host.tld.yml` variables:
+```yml
+---
+
+domain_name: "my-host.tld"
+domain_name_acme_email: "admin@{{ domain_name }}"
+
+
+apps_public_interface_authorized: "eno1"
+apps_authorized_ips:
+  - 0.0.0.0
+apps_publicly_exposed_ports:
+  - 12345
+
+backup_borg_encryption_passphrase: ""
+backup_borg_repositories: []
+backup_source_directories:
+  - /opt
+
+monitoring_admin_password: ""
+monitoring_pushover_user_key: ""
+monitoring_pushover_token: ""
+
+apps:
+  - name: "pirate"
+    src: files/apps/pirate/
+    env: |
+      DOMAIN_NAME={{ domain_name }}
+      USER_ID=1000
+      GROUP_ID=1000
+      EMBY_GIDLIST=986,989
+  - name: "heimdall"
+    src: files/apps/heimdall/
+    env: |
+      DOMAIN_NAME={{ domain_name }}
+      USER_ID=1000
+      GROUP_ID=1000
+      TZ=Europe/Paris
+```
+
+Then run the playbook:
+```bash
+$ pipenv install
+$ pipenv run ./system_administration.yml
+```
