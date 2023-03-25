@@ -53,7 +53,7 @@ services:
       - "org.label-schema.group=monitoring"
 
   karma:
-    image: "lmierzwa/karma:v0.113"
+    image: "lmierzwa/karma:v0.114"
     container_name: "karma"
     networks:
       - "monitoring"
