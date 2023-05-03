@@ -3,7 +3,7 @@ version: '3.6'
 
 services:
   pihole:
-    image: "pihole/pihole:v4.4"
+    image: "pihole/pihole:2023.01"
     cap_add:
       - "NET_ADMIN"
     dns:
